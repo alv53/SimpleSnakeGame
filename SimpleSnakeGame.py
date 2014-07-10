@@ -1,4 +1,18 @@
-import pygame
+#!/usr/bin/python
+import pygame, sys
+from random import randint
+
+# Helper functions
+def GameOver(screen):
+	print "Dead!"
+	text = font.render("You Died", 1, (0,0,0))
+	screen.blit(text, (100, 100))
+	pygame.display.flip()
+	pygame.time.wait(5000)
+	sys.exit(0)
+
+def Collision(x1, x2, y1, y2):
+	return x1==x2 and y1==y2
 
 # Config
 width = 800
@@ -7,7 +21,7 @@ height = 600
 # Create the window
 screen = pygame.display.set_mode((width, height))
 screen.fill((255,255,255))
-pygame.display.set_caption('Alvin\'s Test Game')
+pygame.display.set_caption('SimpleSnakeGame')
 pygame.display.flip()
 
 
@@ -30,10 +44,12 @@ d = 0
 # List to hold the snake
 SnakeX = [300, 290, 280, 270]
 SnakeY = [300, 300, 300, 300]
-
+Food = (randint(0,width-10+1), randint(0,height-10+1))
 # a block represents a segment of the snake
 block = pygame.Surface((10, 10))
 block.fill((0,200,100))
+pygame.init()
+font = pygame.font.SysFont("monospace", 30)
 while running:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -57,16 +73,44 @@ while running:
 				print "down"
 				if d != 3:
 					d = 1
-
+			elif event.key == pygame.K_SPACE:
+				print "Longer"
+				SnakeX.append(0)
+				SnakeY.append(0)
 	screen.fill((255,255,255))
 
-	# Update snake's position
+
+	# Check for collisions
+
+	# Calculate new head location
+	if d == 0: 		#right
+		NewHeadX = SnakeX[0] + 10
+		NewHeadY = SnakeY[0]
+	elif d == 1: 	#down
+		NewHeadX = SnakeX[0]
+		NewHeadY = SnakeY[0] + 10
+	elif d == 2: 	#left
+		NewHeadX = SnakeX[0] - 10
+		NewHeadY = SnakeY[0]
+	else: 			#up
+		NewHeadX = SnakeX[0]
+		NewHeadY = SnakeY[0] - 10
+
+	# Update snake's body position
 	x = len(SnakeX)-1
 	while x > 0:
 		SnakeX[x] = SnakeX[x-1]
 		SnakeY[x] = SnakeY[x-1]
+		if Collision(SnakeX[x], NewHeadX, SnakeY[x], NewHeadY):
+			print "%d: %d, %d, %d, %d" % (x, SnakeX[x], NewHeadX, SnakeY[x], NewHeadY)
+			GameOver(screen)
 		x-=1
 
+	# Update head
+	SnakeX[0] = NewHeadX
+	SnakeY[0] = NewHeadY
+
+	# Update the head position
 	if d == 0: 		#right
 		SnakeX[0] = SnakeX[1] + 10
 		SnakeY[0] = SnakeY[1]
@@ -79,17 +123,18 @@ while running:
 	else: 			#up
 		SnakeX[0] = SnakeX[1]
 		SnakeY[0] = SnakeY[1] - 10
-	
-	# Drawing
-	print SnakeX
-	print SnakeY
-	print "\n"
 
+
+	# Check for collisions and out of bounds
+	if SnakeX[0] < 0 or SnakeX[0] >= width or SnakeY[0] < 0 or SnakeY[0] >= height:
+		GameOver(screen)
+
+	# Drawing the snake
 	for x in range(len(SnakeX)):
 		screen.blit(block, (SnakeX[x],SnakeY[x]))
+
 	# Update
 	pygame.display.flip()
 
-	# 60 fps
 	clock.tick(10)
-# pygame.quit()
+pygame.quit()
