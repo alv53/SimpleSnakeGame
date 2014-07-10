@@ -5,10 +5,10 @@ from random import randint
 # Helper functions
 def GameOver(screen):
 	print "Dead!"
-	text = font.render("You Died", 1, (0,0,0))
-	screen.blit(text, (100, 100))
-	pygame.display.flip()
-	pygame.time.wait(5000)
+	# text = font.render("You Died", 1, (0,0,0))
+	# screen.blit(text, (100, 100))
+	# pygame.display.flip()
+	pygame.time.wait(10000)
 	sys.exit(0)
 
 def Collision(x1, x2, y1, y2):
@@ -51,34 +51,35 @@ block.fill((0,200,100))
 pygame.init()
 font = pygame.font.SysFont("monospace", 30)
 while running:
+	DirSet = False
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
-		if event.type == pygame.KEYDOWN:
-			# Figure out if it was an arrow key. If so
-			# adjust speed.
-			if event.key == pygame.K_LEFT:
-				print "left"
-				if d != 0:
-					d = 2
-			elif event.key == pygame.K_RIGHT:
-				print "right"
-				if d != 2:
-					d = 0
-			elif event.key == pygame.K_UP:
-				print "up"
-				if d != 1:
-					d = 3
-			elif event.key == pygame.K_DOWN:
-				print "down"
-				if d != 3:
-					d = 1
-			elif event.key == pygame.K_SPACE:
-				print "Longer"
-				SnakeX.append(0)
-				SnakeY.append(0)
+		elif not DirSet:
+			if event.type == pygame.KEYDOWN:
+				# Figure out if it was an arrow key. If so
+				# adjust speed.
+				if event.key == pygame.K_LEFT:
+					print "left"
+					if d != 0:
+						d = 2
+						DirSet = True
+				elif event.key == pygame.K_RIGHT:
+					print "right"
+					if d != 2:
+						d = 0
+						DirSet = True
+				elif event.key == pygame.K_UP:
+					print "up"
+					if d != 1:
+						d = 3
+						DirSet = True
+				elif event.key == pygame.K_DOWN:
+					print "down"
+					if d != 3:
+						d = 1
+						DirSet = True
 	screen.fill((255,255,255))
-
 
 	# Check for collisions
 
@@ -101,6 +102,7 @@ while running:
 	while x > 0:
 		SnakeX[x] = SnakeX[x-1]
 		SnakeY[x] = SnakeY[x-1]
+		# Check if the current block collides with the new head
 		if Collision(SnakeX[x], NewHeadX, SnakeY[x], NewHeadY):
 			print "%d: %d, %d, %d, %d" % (x, SnakeX[x], NewHeadX, SnakeY[x], NewHeadY)
 			GameOver(screen)
@@ -110,22 +112,7 @@ while running:
 	SnakeX[0] = NewHeadX
 	SnakeY[0] = NewHeadY
 
-	# Update the head position
-	if d == 0: 		#right
-		SnakeX[0] = SnakeX[1] + 10
-		SnakeY[0] = SnakeY[1]
-	elif d == 1: 	#down
-		SnakeX[0] = SnakeX[1]
-		SnakeY[0] = SnakeY[1] + 10
-	elif d == 2: 	#left
-		SnakeX[0] = SnakeX[1] - 10
-		SnakeY[0] = SnakeY[1]
-	else: 			#up
-		SnakeX[0] = SnakeX[1]
-		SnakeY[0] = SnakeY[1] - 10
-
-
-	# Check for collisions and out of bounds
+	# Check for out of bounds
 	if SnakeX[0] < 0 or SnakeX[0] >= width or SnakeY[0] < 0 or SnakeY[0] >= height:
 		GameOver(screen)
 
