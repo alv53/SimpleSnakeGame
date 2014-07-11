@@ -24,7 +24,6 @@ screen.fill((255,255,255))
 pygame.display.set_caption('SimpleSnakeGame')
 pygame.display.flip()
 
-
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
@@ -44,10 +43,19 @@ d = 0
 # List to hold the snake
 SnakeX = [300, 290, 280, 270]
 SnakeY = [300, 300, 300, 300]
-Food = (randint(0,width-10+1), randint(0,height-10+1))
+
+# Variables to store food position
+FoodX = 10*randint(0,width/10)
+FoodY = 10*randint(0,height/10)
+
 # a block represents a segment of the snake
 block = pygame.Surface((10, 10))
 block.fill((0,200,100))
+
+# block for food
+Food = pygame.Surface((10,10))
+Food.fill((255,0,0))
+
 pygame.init()
 font = pygame.font.SysFont("monospace", 30)
 while running:
@@ -60,29 +68,29 @@ while running:
 				# Figure out if it was an arrow key. If so
 				# adjust speed.
 				if event.key == pygame.K_LEFT:
-					print "left"
 					if d != 0:
 						d = 2
 						DirSet = True
 				elif event.key == pygame.K_RIGHT:
-					print "right"
 					if d != 2:
 						d = 0
 						DirSet = True
 				elif event.key == pygame.K_UP:
-					print "up"
 					if d != 1:
 						d = 3
 						DirSet = True
 				elif event.key == pygame.K_DOWN:
-					print "down"
 					if d != 3:
 						d = 1
 						DirSet = True
 	screen.fill((255,255,255))
 
 	# Check for collisions
-
+	if Collision(SnakeX[0], FoodX, SnakeY[0], FoodY):
+		SnakeX.append(0)
+		SnakeY.append(0)
+		FoodX = 10*randint(0,width/10)
+		FoodY = 10*randint(0,height/10)
 	# Calculate new head location
 	if d == 0: 		#right
 		NewHeadX = SnakeX[0] + 10
@@ -120,6 +128,8 @@ while running:
 	for x in range(len(SnakeX)):
 		screen.blit(block, (SnakeX[x],SnakeY[x]))
 
+	print (FoodX, FoodY)
+	screen.blit(Food, (FoodX, FoodY))
 	# Update
 	pygame.display.flip()
 
