@@ -5,10 +5,10 @@ from random import randint
 # Helper functions
 def GameOver(screen):
 	print "Dead!"
-	# text = font.render("You Died", 1, (0,0,0))
-	# screen.blit(text, (100, 100))
-	# pygame.display.flip()
-	pygame.time.wait(10000)
+	text = font.render("You Died", 1, (0,0,0))
+	screen.blit(text, (100, 100))
+	pygame.display.flip()
+	pygame.time.wait(5000)
 	sys.exit(0)
 
 def Collision(x1, x2, y1, y2):
@@ -31,6 +31,7 @@ clock = pygame.time.Clock()
 running = True
 
 # Init speed of the snake, will increment after every number of food eaten
+# Not using yet...
 speed = 5
 
 # Direction of the snake
@@ -40,13 +41,15 @@ speed = 5
 # 3 = up
 d = 0 
 
+Score = 0
+
 # List to hold the snake
 SnakeX = [300, 290, 280, 270]
 SnakeY = [300, 300, 300, 300]
 
 # Variables to store food position
-FoodX = 10*randint(0,width/10)
-FoodY = 10*randint(0,height/10)
+FoodX = 10*randint(0,width/10-1)
+FoodY = 10*randint(0,height/10-1)
 
 # a block represents a segment of the snake
 block = pygame.Surface((10, 10))
@@ -87,6 +90,7 @@ while running:
 
 	# Check for collisions
 	if Collision(SnakeX[0], FoodX, SnakeY[0], FoodY):
+		Score+=10
 		SnakeX.append(0)
 		SnakeY.append(0)
 		FoodX = 10*randint(0,width/10)
@@ -130,6 +134,8 @@ while running:
 
 	print (FoodX, FoodY)
 	screen.blit(Food, (FoodX, FoodY))
+	text = font.render("Score: %d" % Score, 1, (0,0,0))
+	screen.blit(text, (10, 10))
 	# Update
 	pygame.display.flip()
 
